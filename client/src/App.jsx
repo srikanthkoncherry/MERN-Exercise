@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
-import Task from './components/Task';
+import './styles/Morph.css';
+import './index.css';
 import TaskList from './components/TaskList';
 
 function App() {
   const [todos, setTodos] = useState([]);
   const [newTodoText, setNewTodoText] = useState('');
-  const backendUrl =  'http://localhost:5050/api/todos'; 
+  const backendUrl = 'http://localhost:5050/api/todos';
+
+  console.log("newtodo text", newTodoText)
 
   // Fetch todos from backend on component mount
   useEffect(() => {
@@ -45,8 +47,15 @@ function App() {
     }
   };
 
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      handleAddTodo();
+    }
+  };
+
   const handleToggleCompleted = async (id) => {
     try {
+      console.log("updating todo", id)
       const updatedTodo = { ...todos.find((todo) => todo._id === id) };
       updatedTodo.completed = !updatedTodo.completed;
 
@@ -58,6 +67,7 @@ function App() {
 
       if (response.ok) {
         setTodos(todos.map((todo) => (todo._id === id ? updatedTodo : todo)));
+        console.log("id ", id, " updated successfully")
       }
     } catch (error) {
       console.error('Error toggling completion:', error);
@@ -80,9 +90,11 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Todo List</h1>
-      <input type="text" value={newTodoText} onChange={handleInputChange} />
-      <button onClick={handleAddTodo}>Add Todo</button>
+      <h1 className='textLeft'>Todo List</h1>
+      <div className="input-group mb-3">
+        <input type="text" className="form-control inputCustom" placeholder="Enter new task" value={newTodoText} onChange={handleInputChange} onKeyDown={handleKeyDown} />
+        <button className="btn btn-primary" type="button" id="button-addon2" onClick={handleAddTodo}>Add Task</button>
+      </div>
       <TaskList todos={todos} onToggleCompleted={handleToggleCompleted} onDeleteTodo={handleDeleteTodo} />
     </div>
   );
